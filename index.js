@@ -6,53 +6,10 @@ const mysql = require('mysql2')
  
 app.use(express.json())
 
-app.get('/',(req, res)=>{
-    res.sendFile(path.join(__dirname, 'index.html'));
-
-})
-app.get('/sobre',(req, res)=>{
-    res.sendFile(path.join(__dirname, 'sobre.html'));   
-
-
-
-})
-app.get('/contactos',(req, res)=>{
-    res.sendFile(path.join(__dirname, 'contactos.html'));
-  
-})
-
-app.get('/carros',(req, res)=>{
-    res.sendFile(path.join(__dirname, 'carros.html'));
-});
-
-app.get('/carros/:marca',(req, res)=>{
-    const requestedId = req.params.marca;
-    res.send(`A marca de carro acedido foi o ${requestedId}`);
-});
-
-app.get('/users/:name/nationality/:country',(req, res)=>{
-    const name = req.params.name
-    const country = req.params.country
-    res.send(`O ${name} tem nacionalidade ${country}`);
-});
-
-app.get('/search_users',(req, res)=>{
-    const query = req.query;
-    res.send(`Procuraste pelo termo ${query.name} com o filtro ${query.id}`);
-});
-
-app.get('/tarefas',(req, res)=>{
-    res.sendStatus(404);
-})
-app.get('/pagamento',(req, res)=>{
-    res.status(403).send("FORBIDEEEEEEEEEEEEEEN!");
-})
-
-
-
-app.get('api/songs',(req, res)=>{
+const selecionar = "songs";
+app.get('/api/songs',(req, res)=>{
  //Onde definimos a query
- const myQuery = 'SELECT * FROM songs'
+ const myQuery = `SELECT * FROM ${selecionar}`
     
  //Executa a myQuery
  connection.query(myQuery, (err, results) => {
@@ -102,7 +59,7 @@ app.put('api/songs/:id', (req, res) => {
  });
 })
 
-app.delete('api/songs', (req, res) => {
+app.delete('api/songs/id:', (req, res) => {
 
     console.log(req.body)
      //Onde definimos a query
@@ -120,12 +77,29 @@ app.delete('api/songs', (req, res) => {
  });
 })
 
+const NOME_TABELA = "songs";
+
+app.get('/api/songs/:id',(req, res)=>{
+    const id = req.params.id;
+    const myQuery = `SELECT * FROM ${NOME_TABELA} WHERE id = ${id}`
+       
+    //Executa a myQuery
+    connection.query(myQuery, (err, results) => {
+   
+    // Dar erro se err existir
+    if (err){
+        return res.status(500).send('Erro ao buscar musicas : ' + err.message);
+    }
+    // Enviar resposta
+    res.json(results);
+    });
+   });
 
 const connection= mysql.createConnection({
     host: '127.0.0.1',
     user: 'root',
     password: '',
-    database: 'psi_t1',
+    database: 'musicas_t1',
     port: 3306
 });
 
@@ -135,7 +109,7 @@ connection.connect((err) => {
     } else {
         console.log('Conectado à base de dados MYSQL!');
     }
-    });
+});
     
    
  
