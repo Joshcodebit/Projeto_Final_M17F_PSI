@@ -93,7 +93,19 @@ app.get('/api/songs/:id',(req, res)=>{
     // Enviar resposta
     res.json(results);
     });
+   })
+
+var priceperlike = 0.5;
+
+   app.get('/api/price',(req, res)=>{
+
+const result = {"price":priceperlike}
+
+    // Enviar resposta
+    res.json(result);
    });
+
+
 
 const connection= mysql.createConnection({
     host: '127.0.0.1',
