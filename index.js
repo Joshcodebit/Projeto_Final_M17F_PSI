@@ -161,7 +161,7 @@ app.get('/api/songs/:id/band', (req, res) =>{
     const id = req.params.id;  
     const myQuery = `SELECT artist FROM ${NOME_TABELA} WHERE id = ${id}`;
 connection.query(myQuery, (err, results) => {
- 
+ //
     if (err) {
         return res.status(404).send('Erro a aceder à base de dados: ' + err.message);
     }
