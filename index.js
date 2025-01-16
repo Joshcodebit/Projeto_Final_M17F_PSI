@@ -6,6 +6,7 @@ const mysql = require('mysql2')
  
 app.use(express.json())
 
+//1)
 const selecionar = "songs";
 app.get('/api/songs',(req, res)=>{
  //Onde definimos a query
@@ -23,6 +24,7 @@ app.get('/api/songs',(req, res)=>{
  });
 });
 
+//2)
 app.post('api/songs', (req, res) => {
 
     console.log(req.body)
@@ -40,7 +42,7 @@ app.post('api/songs', (req, res) => {
  res.json(results);
  });
 })
-
+//3)
 app.put('api/songs/:id', (req, res) => {
 
     console.log(req.body)
@@ -59,6 +61,7 @@ app.put('api/songs/:id', (req, res) => {
  });
 })
 
+//4)
 app.delete('api/songs/id:', (req, res) => {
 
     console.log(req.body)
@@ -77,6 +80,7 @@ app.delete('api/songs/id:', (req, res) => {
  });
 })
 
+   //5)
 const NOME_TABELA = "songs";
 
 app.get('/api/songs/:id',(req, res)=>{
@@ -95,6 +99,7 @@ app.get('/api/songs/:id',(req, res)=>{
     });
    })
 
+   //6)
 var priceperlike = 0.5;
 
    app.get('/api/price',(req, res)=>{
@@ -105,6 +110,89 @@ const result = {"price":priceperlike}
     res.json(result);
    });
 
+
+    
+ 
+//7)  
+app.put('/api/price', (req, res) => {
+    if (pricePerLike != null){
+        pricePerLike = req.body.price;
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(400);
+    }
+});
+ 
+ 
+//8)
+app.get('/api/songs/:id/revenue', (req, res) =>{    
+    const id = req.params.id;
+    const myQuery = `SELECT likes FROM ${NOME_TABELA} WHERE id = ${id}`;
+connection.query(myQuery, (err, results) => {
+ 
+    if (err) {
+        return res.status(404).send('Erro ao encontrar a receita: ' + err.message);
+    }
+ 
+    res.json({"revenue": priceperlike * results[0].likes});
+});
+  });
+ 
+ 
+ 
+//9)
+const bands = [
+    {
+        "artist": "Ed Sheeran",
+        "band_members": ["Ed Sheeran"]
+    },
+    {
+        "artist": "Linkin Park",
+        "band_members": ["Mike Shinoda", "Brad Delson", "Dave Farrell", "Joe Hahn", " Emily Armstrong", "Colin Brittain"]
+    },
+    {
+        "artist": "eminem",
+        "band_members": ["eminem"]
+    }
+]
+ 
+ 
+app.get('/api/songs/:id/band', (req, res) =>{    
+    const id = req.params.id;  
+    const myQuery = `SELECT artist FROM ${NOME_TABELA} WHERE id = ${id}`;
+connection.query(myQuery, (err, results) => {
+ 
+    if (err) {
+        return res.status(404).send('Erro a aceder à base de dados: ' + err.message);
+    }
+
+    const artist=results[0].artist;
+    for (let i = 0 ; i < bands.length; i++){
+        if (results[0].artist==bands[i].artist){
+       return res.json(bands[i])
+        }
+    }
+
+    return res.status(404).send('Erro ao encontrar os membros da banda: ');
+ 
+});
+  });  
+
+  //10)
+  
+app.post('/api/songs/:id/band', (req, res) =>{    
+    const id = req.params.id;  
+    const myQuery = `SELECT * FROM ${NOME_TABELA} WHERE id = ${id}`;
+connection.query(myQuery, (err, results) => {
+ 
+    if (err) {
+        return res.status(404).send('Erro ao encontrar a banda: ' + err.message);
+    }
+ 
+    res.json(results[bands]);
+});
+  });  
+ 
 
 
 const connection= mysql.createConnection({
