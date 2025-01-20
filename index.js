@@ -156,7 +156,6 @@ const bands = [
     }
 ]
  
- 
 app.get('/api/songs/:id/band', (req, res) =>{    
     const id = req.params.id;  
     const myQuery = `SELECT artist FROM ${NOME_TABELA} WHERE id = ${id}`;
@@ -166,10 +165,10 @@ connection.query(myQuery, (err, results) => {
         return res.status(404).send('Erro a aceder à base de dados: ' + err.message);
     }
 
-    const artist=results[0].artist;
-    for (let i = 0 ; i < bands.length; i++){
-        if (results[0].artist==bands[i].artist){
-       return res.json(bands[i])
+    const artist = results[0].artist;
+    for (let i = 0; i < bands.length; i++) {
+        if (bands[i].artist === artist) {
+            return res.json(bands[i]);
         }
     }
 
@@ -178,22 +177,77 @@ connection.query(myQuery, (err, results) => {
 });
   });  
 
-  //10)
-  
-app.post('/api/songs/:id/band', (req, res) =>{    
-    const id = req.params.id;  
-    const myQuery = `SELECT * FROM ${NOME_TABELA} WHERE id = ${id}`;
-connection.query(myQuery, (err, results) => {
+//10)
  
-    if (err) {
-        return res.status(404).send('Erro ao encontrar a banda: ' + err.message);
-    }
+app.post("/api/songs/:id/band",(req, res) =>{
+    const id = req.params.id;
+      const band_members = req.body.band_members;
+      const myQuery = `SELECT artist FROM ${NOME_TABELA} where id=${id}`
+      connection.query(myQuery, (err, results) => {
+        if (err) {
+          return res.status(500).send('Erro ao buscar songs: ' + err.message);
+        }
+      const band = {
+          "artist": results[0].artist,
+          "band_members": band_members
+      }
+      bands.push(band);
+      res.sendStatus(200);
+      console.log(bands)
+    })
+    })
  
-    res.json(results[bands]);
-});
-  });  
+//11)
+ 
+app.put('/api/songs/:id/band', (req, res) => {
+    const id = req.params.id;
+
+     
+    const myQuery = `SELECT artist FROM ${NOME_TABELA} WHERE id = ${id}`;
+ 
+    connection.query(myQuery, (err, results) => {
+        if (err) {
+            return res.status(500).send('Erro ao buscar o artista na base de dados: ' + err.message);
+        }
+        if (results.length === 0) {
+            return res.status(404).send('Artista não encontrado para o ID fornecido.');
+        }
  
 
+        const artist=results[0].artist;
+    for (let i = 0 ; i < bands.length; i++){
+        if (bands[0].artist==artist){
+           bands[i].band_members = req.body.band_members;
+           return res.status(200).send('O artista foi atualizado') 
+        }
+       
+    } 
+      res.status(404).send('Artista não encontrado no array bands.');
+    });
+});
+
+
+//12)
+app.delete('/api/songs/:id/band', (req, res) =>{;
+
+
+    const id = req.params.id;
+    const band_members = req.body.band_members;
+    const query = `SELECT artist FROM ${NOME_TABELA} where id=${id}`
+    connection.query(query, (err, results) => {
+       
+        for (let i = 0 ; i < bands.length; i++){
+          const artist=results[0].artist;
+          if (results[0].artist==bands[i].artist){
+            bands.splice(i);
+            return res.status(200).send('Bandas atualizadas');
+            }
+          }
+   
+          res.status(404).send('Banda não encontrada');  
+    });
+
+  });
 
 const connection= mysql.createConnection({
     host: '127.0.0.1',
