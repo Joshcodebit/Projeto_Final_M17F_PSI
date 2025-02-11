@@ -100,14 +100,12 @@ app.get('/api/songs', (req, res) => {
 });
 
 // Rota para adicionar uma música 
-app.post('/api/songs', (req, res) => {
+app.post('/new-song', (req, res) => {
 
   const {title, artist, album, genre, duration_seconds, release_date, likes} = req.body;
 
   // Validação dos campos obrigatórios
-  if (!title || !artist) {
-    return res.status(400).send('Campos obrigatórios: title, artist');
-  }
+  
 
   const query = `INSERT INTO ${NOME_TABELA} (title, artist, album, genre, duration_seconds, release_date, likes) VALUES ("${title}", "${artist}", "${album}", "${genre}", "${duration_seconds}", "${release_date}", "${likes}")`;
 
@@ -484,18 +482,17 @@ app.post('/api/songs/bulk', (req, res) => {
     res.render("index")
 })
 
- 
 app.get('/songs', (req, res) => {
     
     res.render("songs")
 })
  
-app.get('/', (req, res) => {
-    
+app.get('/new-song', (req, res) => {
     res.render("new-song")
 })
  
-app.get('/', (req, res) => {
+app.get('/price', (req, res) => {
     
     res.render("price")
 })
+
