@@ -100,7 +100,7 @@ app.get('/api/songs', (req, res) => {
 });
 
 // Rota para adicionar uma música 
-app.post('/new-song', (req, res) => {
+app.post('/api/songs', (req, res) => {
 
   const {title, artist, album, genre, duration_seconds, release_date, likes} = req.body;
 
@@ -490,7 +490,7 @@ app.get('/songs', (req, res) => {
 app.get('/new-song', (req, res) => {
     res.render("new-song")
 })
- 
+
 app.get('/price', (req, res) => {
     
     res.render("price")
